@@ -1,8 +1,0 @@
-services:
-  - type: web
-    name: jay-tv
-    runtime: node
-    plan: free
-    buildCommand: 'npm install'
-    startCommand: 'node server.mjs'
-    autoDeploy: true
