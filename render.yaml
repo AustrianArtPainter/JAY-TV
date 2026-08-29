@@ -1,8 +1,8 @@
 services:
   - type: web
-    name: libretv
+    name: jay-tv
     runtime: node
     plan: free
     buildCommand: 'npm install'
     startCommand: 'node server.mjs'
-    autoDeploy: true 
+    autoDeploy: true

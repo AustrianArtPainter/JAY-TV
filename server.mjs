@@ -98,6 +98,51 @@ app.get('/s=:keyword', async (req, res) => {
   }
 });
 
+function getAllowedDoubanImageUrl(rawUrl) {
+  try {
+    const imageUrl = new URL(rawUrl);
+    if (imageUrl.protocol !== 'https:') return null;
+    if (!/^img\d+\.doubanio\.com$/i.test(imageUrl.hostname)) return null;
+    return imageUrl;
+  } catch {
+    return null;
+  }
+}
+
+// 豆瓣海报专用代理。该路由只允许固定图片域名和栅格图片，不复用任意 URL 代理。
+app.get('/image-proxy', async (req, res) => {
+  const imageUrl = getAllowedDoubanImageUrl(req.query.url);
+  if (!imageUrl) return res.status(400).send('无效的图片 URL');
+
+  try {
+    const response = await axios({
+      method: 'get',
+      url: imageUrl.href,
+      responseType: 'arraybuffer',
+      timeout: config.timeout,
+      maxRedirects: 0,
+      maxContentLength: 5 * 1024 * 1024,
+      maxBodyLength: 5 * 1024 * 1024,
+      headers: {
+        'User-Agent': config.userAgent,
+        'Referer': 'https://movie.douban.com/',
+        'Accept': 'image/avif,image/webp,image/png,image/jpeg,image/gif;q=0.8'
+      }
+    });
+
+    const contentType = response.headers['content-type'] || '';
+    if (!/^image\/(?:avif|webp|png|jpe?g|gif)$/i.test(contentType) || response.data.length > 5 * 1024 * 1024) {
+      return res.status(502).send('图片响应无效');
+    }
+
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
+    res.send(response.data);
+  } catch (error) {
+    res.status(502).send('图片加载失败');
+  }
+});
+
 function isValidUrl(urlString) {
   try {
     const parsed = new URL(urlString);
