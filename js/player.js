@@ -92,7 +92,41 @@ let adFilteringEnabled = true; // 默认开启广告过滤
 let progressSaveInterval = null; // 定期保存进度的计时器
 let currentVideoUrl = ''; // 记录当前实际的视频URL
 const isWebkit = (typeof window.webkitConvertPointFromNodeToPage === 'function')
+// iOS/iPadOS 没有可靠的独立 UA Client Hint；用触摸能力和 WebKit 专有 CSS 特性识别。
+const isIOS = navigator.maxTouchPoints > 0
+    && typeof CSS !== 'undefined'
+    && typeof CSS.supports === 'function'
+    && CSS.supports('-webkit-touch-callout', 'none');
 Artplayer.FULLSCREEN_WEB_IN_BODY = true;
+Artplayer.DBCLICK_FULLSCREEN = !isIOS;
+
+function configureInlineVideo(video) {
+    if (!video) return;
+
+    video.controls = false;
+    video.playsInline = true;
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', '');
+    video.disablePictureInPicture = true;
+    video.setAttribute('disablepictureinpicture', '');
+    video.setAttribute('controlslist', 'nodownload noremoteplayback');
+
+    if (isIOS) {
+        video.disableRemotePlayback = true;
+        video.setAttribute('x-webkit-airplay', 'deny');
+    }
+}
+
+function togglePreferredFullscreen() {
+    if (!art) return;
+
+    // iOS 只切换 ArtPlayer 的页面内全屏，不调用系统视频全屏。
+    if (isIOS) {
+        art.fullscreenWeb = !art.fullscreenWeb;
+    } else {
+        art.fullscreen = !art.fullscreen;
+    }
+}
 
 // 页面加载
 document.addEventListener('DOMContentLoaded', function () {
@@ -218,7 +252,7 @@ function initializePageContent() {
     }
 
     // 设置页面标题
-    document.title = currentVideoTitle + ' - LibreTV播放器';
+    document.title = currentVideoTitle + ' - JAY-TV 播放器';
     document.getElementById('videoTitle').textContent = currentVideoTitle;
 
     // 初始化播放器
@@ -352,7 +386,7 @@ function handleKeyboardShortcuts(e) {
     // f 键 = 切换全屏
     if (e.key === 'f' || e.key === 'F') {
         if (art) {
-            art.fullscreen = !art.fullscreen;
+            togglePreferredFullscreen();
             showShortcutHint('切换全屏', 'fullscreen');
             e.preventDefault();
         }
@@ -447,24 +481,25 @@ function initPlayer(videoUrl) {
         isLive: false,
         muted: false,
         autoplay: true,
-        pip: true,
+        pip: false,
         autoSize: false,
-        autoMini: true,
+        autoMini: !isIOS,
         screenshot: true,
         setting: true,
         loop: false,
         flip: false,
         playbackRate: true,
         aspectRatio: false,
-        fullscreen: true,
+        fullscreen: !isIOS,
         fullscreenWeb: true,
         subtitleOffset: false,
         miniProgressBar: true,
         mutex: true,
         backdrop: true,
         playsInline: true,
+        autoOrientation: !isIOS,
         autoPlayback: false,
-        airplay: true,
+        airplay: !isIOS,
         hotkey: false,
         theme: '#23ade5',
         lang: navigator.language.toLowerCase(),
@@ -473,6 +508,8 @@ function initPlayer(videoUrl) {
         },
         customType: {
             m3u8: function (video, url) {
+                configureInlineVideo(video);
+
                 // 清理之前的HLS实例
                 if (currentHls && currentHls.destroy) {
                     try {
@@ -512,19 +549,18 @@ function initPlayer(videoUrl) {
                 hls.loadSource(url);
                 hls.attachMedia(video);
 
-                // enable airplay, from https://github.com/video-dev/hls.js/issues/5989
-                // 检查是否已存在source元素，如果存在则更新，不存在则创建
-                let sourceElement = video.querySelector('source');
-                if (sourceElement) {
-                    // 更新现有source元素的URL
-                    sourceElement.src = videoUrl;
-                } else {
-                    // 创建新的source元素
-                    sourceElement = document.createElement('source');
-                    sourceElement.src = videoUrl;
-                    video.appendChild(sourceElement);
+                // 非 iOS 设备保留原有 AirPlay source 兼容路径；iOS 明确保持 inline/本机播放。
+                if (!isIOS) {
+                    let sourceElement = video.querySelector('source');
+                    if (sourceElement) {
+                        sourceElement.src = videoUrl;
+                    } else {
+                        sourceElement = document.createElement('source');
+                        sourceElement.src = videoUrl;
+                        video.appendChild(sourceElement);
+                    }
+                    video.disableRemotePlayback = false;
                 }
-                video.disableRemotePlayback = false;
 
                 hls.on(Hls.Events.MANIFEST_PARSED, function () {
                     video.play().catch(e => {
@@ -623,7 +659,7 @@ function initPlayer(videoUrl) {
             clearTimeout(hideTimer);
         }
 
-        if (!isWeb) {
+        if (!isWeb && !isIOS) {
             if (window.screen.orientation && window.screen.orientation.lock) {
                 window.screen.orientation.lock('landscape')
                     .then(() => {
@@ -636,6 +672,7 @@ function initPlayer(videoUrl) {
 
     // 播放器加载完成后初始隐藏工具栏
     art.on('ready', () => {
+        configureInlineVideo(art.video);
         hideControls();
     });
 
@@ -729,14 +766,13 @@ function initPlayer(videoUrl) {
         }
     });
 
-    // 添加双击全屏支持
+    // 添加双击全屏支持；iOS 只使用页面内 fullscreenWeb。
     art.on('video:playing', () => {
-        // 绑定双击事件到视频容器
         if (art.video) {
-            art.video.addEventListener('dblclick', () => {
-                art.fullscreen = !art.fullscreen;
+            art.video.ondblclick = () => {
+                togglePreferredFullscreen();
                 art.play();
-            });
+            };
         }
     });
 
