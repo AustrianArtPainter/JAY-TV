@@ -3,6 +3,30 @@ const PROXY_URL = '/proxy/';    // 适用于 Cloudflare, Netlify (带重写), Ve
 // const HOPLAYER_URL = 'https://hoplayer.com/index.html';
 const SEARCH_HISTORY_KEY = 'videoSearchHistory';
 const MAX_HISTORY_ITEMS = 5;
+const POSTER_FALLBACK_URL = 'image/nomedia.png';
+
+// 统一处理海报 URL：豆瓣图片通过受限图片代理加载，其他来源保持直连。
+// HTTPS 页面遇到 HTTP 海报时优先升级协议，失败后由图片 onerror 使用本地 fallback。
+function getPosterImageUrl(rawUrl) {
+    if (!rawUrl || typeof rawUrl !== 'string') return POSTER_FALLBACK_URL;
+
+    try {
+        const posterUrl = new URL(rawUrl.trim(), window.location.href);
+        if (!['http:', 'https:'].includes(posterUrl.protocol)) return POSTER_FALLBACK_URL;
+
+        if (window.location.protocol === 'https:' && posterUrl.protocol === 'http:') {
+            posterUrl.protocol = 'https:';
+        }
+
+        if (/^img\d+\.doubanio\.com$/i.test(posterUrl.hostname)) {
+            return `/image-proxy?url=${encodeURIComponent(posterUrl.href)}`;
+        }
+
+        return posterUrl.href;
+    } catch (error) {
+        return POSTER_FALLBACK_URL;
+    }
+}
 
 // 密码保护配置
 const PASSWORD_CONFIG = {
@@ -13,8 +37,8 @@ const PASSWORD_CONFIG = {
 
 // 网站信息配置
 const SITE_CONFIG = {
-    name: 'LibreTV',
-    url: 'https://libretv.is-an.org',
+    name: 'JAY-TV',
+    url: window.location.origin,
     description: '免费在线视频搜索与观看平台',
     logo: 'image/logo.png',
     version: '1.0.3'

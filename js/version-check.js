@@ -36,6 +36,7 @@ async function checkForUpdates() {
         
         // 获取最新版本
         let latestVersion;
+        // JAY-TV 暂无独立发布地址，保留原始 LibreTV upstream 作为兼容性版本参考。
         const VERSION_URL = {
             PROXY: 'https://ghfast.top/raw.githubusercontent.com/LibreSpark/LibreTV/main/VERSION.txt',
             DIRECT: 'https://raw.githubusercontent.com/LibreSpark/LibreTV/main/VERSION.txt'
@@ -141,7 +142,7 @@ function addVersionInfoToFooter() {
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
-                发现新版
+                upstream 有新版
             </span>`;
             
             setTimeout(() => {
@@ -154,7 +155,7 @@ function addVersionInfoToFooter() {
             }, 100);
         } else {
             // 如果没有更新，显示当前版本为最新版本
-            versionElement.innerHTML = `版本: ${result.currentFormatted} <span class="text-green-500">(最新版本)</span>`;
+            versionElement.innerHTML = `版本: ${result.currentFormatted} <span class="text-green-500">(与 upstream 一致)</span>`;
         }
         
         // 显示版本元素
