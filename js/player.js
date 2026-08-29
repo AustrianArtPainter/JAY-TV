@@ -117,12 +117,33 @@ function configureInlineVideo(video) {
     }
 }
 
+function toggleIOSNativeFullscreen(video = art && art.video) {
+    if (!video) return false;
+
+    const isNativeFullscreen = video.webkitDisplayingFullscreen
+        || video.webkitPresentationMode === 'fullscreen';
+    const method = isNativeFullscreen
+        ? (video.webkitExitFullscreen || video.webkitExitFullScreen)
+        : (video.webkitEnterFullscreen || video.webkitEnterFullScreen);
+
+    if (typeof method !== 'function') return false;
+
+    try {
+        method.call(video);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
 function togglePreferredFullscreen() {
     if (!art) return;
 
-    // iOS 只切换 ArtPlayer 的页面内全屏，不调用系统视频全屏。
+    // iOS 使用 Safari 原生视频全屏，与 YouTube 移动网页的全屏路径一致。
     if (isIOS) {
-        art.fullscreenWeb = !art.fullscreenWeb;
+        if (!toggleIOSNativeFullscreen()) {
+            art.fullscreenWeb = !art.fullscreenWeb;
+        }
     } else {
         art.fullscreen = !art.fullscreen;
     }
@@ -491,7 +512,7 @@ function initPlayer(videoUrl) {
         playbackRate: true,
         aspectRatio: false,
         fullscreen: !isIOS,
-        fullscreenWeb: true,
+        fullscreenWeb: !isIOS,
         subtitleOffset: false,
         miniProgressBar: true,
         mutex: true,
@@ -501,6 +522,22 @@ function initPlayer(videoUrl) {
         autoPlayback: false,
         airplay: !isIOS,
         hotkey: false,
+        controls: isIOS ? [
+            function (player) {
+                return {
+                    name: 'ios-native-fullscreen',
+                    position: 'right',
+                    index: 70,
+                    tooltip: player.i18n.get('Fullscreen'),
+                    html: player.icons.fullscreenOn,
+                    click: function () {
+                        if (!toggleIOSNativeFullscreen(player.video)) {
+                            player.fullscreenWeb = !player.fullscreenWeb;
+                        }
+                    },
+                };
+            },
+        ] : [],
         theme: '#23ade5',
         lang: navigator.language.toLowerCase(),
         moreVideoAttr: {
@@ -766,7 +803,7 @@ function initPlayer(videoUrl) {
         }
     });
 
-    // 添加双击全屏支持；iOS 只使用页面内 fullscreenWeb。
+    // 添加双击全屏支持；iOS 优先进入 Safari 原生视频全屏。
     art.on('video:playing', () => {
         if (art.video) {
             art.video.ondblclick = () => {
