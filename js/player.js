@@ -149,6 +149,28 @@ function togglePreferredFullscreen() {
     }
 }
 
+function installIOSNativeFullscreenControl(player) {
+    if (!isIOS || !player || !player.controls) return;
+
+    try {
+        player.controls.add({
+            name: 'ios-native-fullscreen',
+            position: 'right',
+            index: 70,
+            tooltip: player.i18n.get('Fullscreen'),
+            html: player.icons.fullscreenOn,
+            click: function () {
+                if (!toggleIOSNativeFullscreen(player.video)) {
+                    player.fullscreenWeb = !player.fullscreenWeb;
+                }
+            },
+        });
+    } catch (error) {
+        // 全屏控件不得阻断播放器、资源栏和选集的初始化。
+        console.warn('iOS native fullscreen control initialization failed:', error);
+    }
+}
+
 // 页面加载
 document.addEventListener('DOMContentLoaded', function () {
     // 先检查用户是否已通过密码验证
@@ -278,7 +300,12 @@ function initializePageContent() {
 
     // 初始化播放器
     if (videoUrl) {
-        initPlayer(videoUrl);
+        try {
+            initPlayer(videoUrl);
+        } catch (error) {
+            console.error('Player initialization failed:', error);
+            showError('播放器初始化失败，请刷新后重试');
+        }
     } else {
         showError('无效的视频链接');
     }
@@ -522,22 +549,6 @@ function initPlayer(videoUrl) {
         autoPlayback: false,
         airplay: !isIOS,
         hotkey: false,
-        controls: isIOS ? [
-            function (player) {
-                return {
-                    name: 'ios-native-fullscreen',
-                    position: 'right',
-                    index: 70,
-                    tooltip: player.i18n.get('Fullscreen'),
-                    html: player.icons.fullscreenOn,
-                    click: function () {
-                        if (!toggleIOSNativeFullscreen(player.video)) {
-                            player.fullscreenWeb = !player.fullscreenWeb;
-                        }
-                    },
-                };
-            },
-        ] : [],
         theme: '#23ade5',
         lang: navigator.language.toLowerCase(),
         moreVideoAttr: {
@@ -655,6 +666,9 @@ function initPlayer(videoUrl) {
             }
         }
     });
+
+    // ArtPlayer 实例完成后再注入 iOS 原生全屏入口，避免控件配置影响构造阶段。
+    installIOSNativeFullscreenControl(art);
 
     // artplayer 没有 'fullscreenWeb:enter', 'fullscreenWeb:exit' 等事件
     // 所以原控制栏隐藏代码并没有起作用
