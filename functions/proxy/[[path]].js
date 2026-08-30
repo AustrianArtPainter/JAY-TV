@@ -93,6 +93,9 @@ export async function onRequest(context) {
     // 创建标准化的响应
     function createResponse(body, status = 200, headers = {}) {
         const responseHeaders = new Headers(headers);
+        // 响应正文已被读取并重新构造，不能继续使用上游压缩态的编码和长度。
+        responseHeaders.delete("Content-Encoding");
+        responseHeaders.delete("Content-Length");
         // 关键：添加 CORS 跨域头，允许前端 JS 访问代理后的响应
         responseHeaders.set("Access-Control-Allow-Origin", "*"); // 允许任何来源访问
         responseHeaders.set("Access-Control-Allow-Methods", "GET, HEAD, POST, OPTIONS"); // 允许的方法
