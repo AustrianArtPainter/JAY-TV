@@ -1,9 +1,5 @@
-const CUSTOMER_SITES = {
-    qiqi: {
-        api: 'https://www.qiqidys.com/api.php/provide/vod',
-        name: '七七资源',
-    }
-};
+// 额外内置源扩展。七七资源因 TLS 接口已不可用而移除。
+const CUSTOMER_SITES = {};
 
 // 调用全局方法合并
 if (window.extendAPISites) {
