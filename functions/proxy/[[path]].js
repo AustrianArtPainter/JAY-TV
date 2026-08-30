@@ -362,11 +362,11 @@ export async function onRequest(context) {
 
         let kvNamespace = null;
         try {
-            // 优先使用 JAY-TV binding，并兼容既有部署中的 LIBRETV_PROXY_KV。
-            kvNamespace = env.JAYTV_PROXY_KV || env.LIBRETV_PROXY_KV;
+            // 优先使用 JAYFLIX binding，并兼容既有部署中的旧 binding。
+            kvNamespace = env.JAYFLIX_PROXY_KV || env.JAYTV_PROXY_KV || env.LIBRETV_PROXY_KV;
             if (!kvNamespace) throw new Error("KV 命名空间未绑定");
         } catch (e) {
-            logDebug(`KV 命名空间 'JAYTV_PROXY_KV'（或兼容的 'LIBRETV_PROXY_KV'）访问出错或未绑定: ${e.message}`);
+            logDebug(`KV 命名空间 'JAYFLIX_PROXY_KV'（或兼容的旧 binding）访问出错或未绑定: ${e.message}`);
             kvNamespace = null; // 确保设为 null
         }
 
@@ -433,10 +433,10 @@ export async function onRequest(context) {
         const cacheKey = `proxy_raw:${targetUrl}`; // 使用原始内容的缓存键
         let kvNamespace = null;
         try {
-            kvNamespace = env.JAYTV_PROXY_KV || env.LIBRETV_PROXY_KV;
+            kvNamespace = env.JAYFLIX_PROXY_KV || env.JAYTV_PROXY_KV || env.LIBRETV_PROXY_KV;
             if (!kvNamespace) throw new Error("KV 命名空间未绑定");
         } catch (e) {
-            logDebug(`KV 命名空间 'JAYTV_PROXY_KV'（或兼容的 'LIBRETV_PROXY_KV'）访问出错或未绑定: ${e.message}`);
+            logDebug(`KV 命名空间 'JAYFLIX_PROXY_KV'（或兼容的旧 binding）访问出错或未绑定: ${e.message}`);
             kvNamespace = null;
         }
 
