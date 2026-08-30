@@ -295,7 +295,7 @@ function initializePageContent() {
     }
 
     // 设置页面标题
-    document.title = currentVideoTitle + ' - JAY-TV 播放器';
+    document.title = currentVideoTitle + ' - JAYFLIX 播放器';
     document.getElementById('videoTitle').textContent = currentVideoTitle;
 
     // 初始化播放器

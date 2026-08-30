@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 try {
                     window.history.replaceState(
                         { search: keyword }, 
-                        `搜索: ${keyword} - JAY-TV`,
+                        `搜索: ${keyword} - JAYFLIX`,
                         window.location.href
                     );
                 } catch (e) {
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 window.history.replaceState(
                     { search: searchQuery }, 
-                    `搜索: ${searchQuery} - JAY-TV`,
+                    `搜索: ${searchQuery} - JAYFLIX`,
                     `/s=${encodeURIComponent(searchQuery)}`
                 );
             } catch (e) {
