@@ -216,6 +216,9 @@ app.get('/proxy/:encodedUrl', async (req, res) => {
 
     // 转发响应头（过滤敏感头）
     const headers = { ...response.headers };
+    // Axios 会自动解压响应体，上游的压缩编码和长度已不再适用于当前数据流。
+    delete headers['content-encoding'];
+    delete headers['content-length'];
     const sensitiveHeaders = (
       process.env.FILTERED_HEADERS || 
       'content-security-policy,cookie,set-cookie,x-frame-options,access-control-allow-origin'
