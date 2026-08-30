@@ -1,7 +1,7 @@
 # JAYFLIX
 
 <div align="center">
-  <img src="image/logo.png" alt="JAYFLIX Logo" width="112">
+  <img src="image/logo-jayflix.png" alt="JAYFLIX Logo" width="112">
   <p>轻量级、多源在线视频搜索与播放前端</p>
 </div>
 
