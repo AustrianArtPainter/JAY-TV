@@ -1,14 +1,14 @@
-# JAY-TV - 免费在线视频搜索与观看平台
+# JAYFLIX - 免费在线视频搜索与观看平台
 
 <div align="center">
-  <img src="image/logo.png" alt="JAY-TV Logo" width="120">
+  <img src="image/logo.png" alt="JAYFLIX Logo" width="120">
   <br>
   <p><strong>自由观影，畅享精彩</strong></p>
 </div>
 
 ## 📺 项目简介
 
-JAY-TV 是一个轻量级、免费的在线视频搜索与观看平台，提供来自多个视频源的内容搜索与播放服务。无需注册，即开即用，支持多种设备访问。项目结合了前端技术和后端代理功能，可部署在支持服务端功能的各类网站托管服务上。
+JAYFLIX 是一个轻量级、免费的在线视频搜索与观看平台，提供来自多个视频源的内容搜索与播放服务。无需注册，即开即用，支持多种设备访问。项目结合了前端技术和后端代理功能，可部署在支持服务端功能的各类网站托管服务上。
 
 本项目从 [LibreSpark/LibreTV](https://github.com/LibreSpark/LibreTV) upstream fork 并继续维护；原项目基于 [bestK/tv](https://github.com/bestK/tv) 进行重构与增强。
 
@@ -24,7 +24,7 @@ JAY-TV 是一个轻量级、免费的在线视频搜索与观看平台，提供�
 
 ## 🚀 快速部署
 
-将当前 JAY-TV 仓库导入 Vercel、Netlify、Cloudflare Pages 或 Render，即可使用仓库中对应的平台配置部署。旧 upstream 的一键部署链接没有保留，因为它们会部署原始 LibreTV，而不是当前 JAY-TV 代码。
+将当前 JAYFLIX 仓库导入 Vercel、Netlify、Cloudflare Pages 或 Render，即可使用仓库中对应的平台配置部署。旧 upstream 的一键部署链接没有保留，因为它们会部署原始 LibreTV，而不是当前 JAYFLIX 代码。
 
 ## ⚠️ 安全与隐私提醒
 
@@ -91,24 +91,24 @@ Pull Bot 会反复触发无效的 PR 和垃圾邮件，严重干扰项目维护�
 3. 选择您的仓库，Render 会自动检测到 `render.yaml` 配置文件
 4. 保持默认设置（无需设置环境变量，默认不启用密码保护）
 5. 点击 "Create Web Service"，等待部署完成
-6. 部署成功后即可访问您的 JAY-TV 实例
+6. 部署成功后即可访问您的 JAYFLIX 实例
 
 > 如需启用密码保护，可在 Render 控制台的环境变量中手动添加 `PASSWORD` 和/或 `ADMINPASSWORD`。
 
 ### Docker
 
 ```bash
-docker build -t jay-tv:local .
+docker build -t jayflix:local .
 ```
 
 ```
 docker run -d \
-  --name jay-tv \
+  --name jayflix \
   --restart unless-stopped \
   -p 8899:8080 \
   -e PASSWORD=your_password \
   -e ADMINPASSWORD=your_adminpassword \
-  jay-tv:local
+  jayflix:local
 ```
 
 ### Docker Compose
@@ -117,10 +117,10 @@ docker run -d \
 
 ```yaml
 services:
-  jay-tv:
+  jayflix:
     build: .
-    image: jay-tv:local
-    container_name: jay-tv
+    image: jayflix:local
+    container_name: jayflix
     ports:
       - "8899:8080" # 将内部 8080 端口映射到主机的 8899 端口
     environment:
@@ -128,7 +128,7 @@ services:
       - ADMINPASSWORD=${PASSWORD:-your_adminpassword} # 可将 your_adminpassword 修改为你想要的密码，默认为 your_adminpassword
     restart: unless-stopped
 ```
-启动 JAY-TV：
+启动 JAYFLIX：
 
 ```bash
 docker compose up -d
@@ -158,7 +158,7 @@ npm run dev
 
 ### 密码保护
 
-要为您的 JAY-TV 实例添加密码保护，可以在部署平台上设置环境变量：
+要为您的 JAYFLIX 实例添加密码保护，可以在部署平台上设置环境变量：
 
 **环境变量名**: `PASSWORD` 
 **值**: 您想设置的密码
@@ -177,7 +177,7 @@ npm run dev
 
 ### API兼容性
 
-JAY-TV 支持标准的苹果 CMS V10 API 格式。添加自定义 API 时需遵循以下格式：
+JAYFLIX 支持标准的苹果 CMS V10 API 格式。添加自定义 API 时需遵循以下格式：
 - 搜索接口: `https://example.com/api.php/provide/vod/?ac=videolist&wd=关键词`
 - 详情接口: `https://example.com/api.php/provide/vod/?ac=detail&ids=视频ID`
 
@@ -208,7 +208,7 @@ JAY-TV 支持标准的苹果 CMS V10 API 格式。添加自定义 API 时需遵�
 
 ## ⚠️ 免责声明
 
-JAY-TV 仅作为视频搜索工具，不存储、上传或分发任何视频内容。所有视频均来自第三方 API 接口提供的搜索结果。如有侵权内容，请联系相应的内容提供方。
+JAYFLIX 仅作为视频搜索工具，不存储、上传或分发任何视频内容。所有视频均来自第三方 API 接口提供的搜索结果。如有侵权内容，请联系相应的内容提供方。
 
 本项目开发者不对使用本项目产生的任何后果负责。使用本项目时，您必须遵守当地的法律法规。
 

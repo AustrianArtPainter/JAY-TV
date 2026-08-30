@@ -1,18 +1,18 @@
 services:
-  jay-tv:
+  jayflix:
     build: .
-    image: jay-tv:local
-    container_name: jay-tv
+    image: jayflix:local
+    container_name: jayflix
     ports:
       - "8899:8080" # 将内部 8080 端口映射到主机的 8899 端口
     environment:
       - PASSWORD=${PASSWORD:-your_password} # 可将 your_password 修改为你想要的密码，默认为 your_password
 #    volumes:
-#      - jay_tv_data:/app # 不要修改
+#      - jayflix_data:/app # 不要修改
     restart: unless-stopped
 
 #volumes:
-#  jay_tv_data:
+#  jayflix_data:
 #    driver: local
 #    driver_opts:
 #      type: none

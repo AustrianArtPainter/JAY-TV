@@ -1,6 +1,6 @@
 # 贡献指南
 
-感谢您对 JAY-TV 项目的关注！我们欢迎所有形式的贡献，包括但不限于代码提交、问题报告、功能建议、文档改进等。
+感谢您对 JAYFLIX 项目的关注！我们欢迎所有形式的贡献，包括但不限于代码提交、问题报告、功能建议、文档改进等。
 
 ## 🚀 快速开始
 
@@ -19,8 +19,8 @@
 
 2. **克隆仓库**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/JAY-TV.git
-   cd JAY-TV
+   git clone https://github.com/AustrianArtPainter/Jayflix.git
+   cd Jayflix
    ```
 
 3. **安装依赖**
@@ -50,7 +50,7 @@
 
 如果您发现了 bug 或希望建议新功能：
 
-1. 首先查看当前 JAY-TV 仓库的 Issues，必要时再参考 [LibreSpark/LibreTV upstream Issues](https://github.com/LibreSpark/LibreTV/issues)
+1. 首先查看当前 JAYFLIX 仓库的 Issues，必要时再参考 [LibreSpark/LibreTV upstream Issues](https://github.com/LibreSpark/LibreTV/issues)
 2. 创建新的 Issue，请包含：
    - 清晰的标题和描述
    - 重现步骤（如果是 bug）
@@ -270,7 +270,7 @@ function search(k) {
 
 ## 🙏 致谢
 
-感谢所有为 JAY-TV 及其 upstream 项目做出贡献的开发者！您的每一份贡献都让这个项目变得更好。
+感谢所有为 JAYFLIX 及其 upstream 项目做出贡献的开发者！您的每一份贡献都让这个项目变得更好。
 
 ### 贡献者列表
 
@@ -280,4 +280,4 @@ function search(k) {
 
 **再次感谢您的贡献！** 🎉
 
-让我们一起构建一个更好的 JAY-TV！
+让我们一起构建一个更好的 JAYFLIX！
